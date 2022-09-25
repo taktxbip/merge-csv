@@ -8,6 +8,8 @@ fs.readdir(__dirname, (err, files) => {
   });
 });
 
+// aws s3 sync s3://crypto-save-history ./crypto-save-history 
+
 // ^[\w]*usdt-line-[\d]{4}-[\d]{2}-[\d]{1,2}.csv$
 // var matches = text.match(/price\[(\d+)\]\[(\d+)\]/);
 
