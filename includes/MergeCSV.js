@@ -10,13 +10,17 @@ class MergeCSV {
     this.month = month;
     this.year = 2022;
     this.unzip = true;
-    this.monthFolder = `crypto-save-history/${this.year}/${this.month}/`;
+    this.srcMonthFolder = `crypto-save-history/${this.year}/${this.month}/`;
+    this.resMonthFolder = `csv/${this.month}/`;
 
-    this.exec(`sudo rm -rf ./csv/${this.month}`);
     this.exec(`mkdir ./csv/${this.month}`);
 
-    // rm zip files
-    // this.exec(`find ${path.join(__approot, this.monthFolder)} -type f -name '*.zip' -delete`);
+    // rm src csv files
+    // this.exec(`find ${path.join(__approot, this.srcMonthFolder)} -type f -name '*.csv' -delete`);
+  }
+
+  init() {
+
   }
 
   exec(cmd) {
@@ -33,26 +37,58 @@ class MergeCSV {
     });
   }
 
+  rmCSVs = async () => {
+    console.log('rmCSVs');
+    const files = await this.getDirFiles(this.resMonthFolder);
+    
+    return new Promise((resolve, reject) => {
+      if (!files.length) {
+        resolve('Nothing to remove');
+      }
+      for (const filename of files) {
+        fs.unlink(path.join(__approot, this.resMonthFolder, filename), (err) => {
+          if (err) {
+            console.log(err);
+          } else {
+            console.log('rmCSVs: files were removed');
+          }
+        })
+      }
+
+    });
+
+  }
 
   async merge() {
 
-    const coins = await this.getDirFiles(this.monthFolder);
+    const status = await this.rmCSVs();
+    console.log(status);
+
+    const coins = await this.getDirFiles(this.srcMonthFolder);
+
+    console.log('Unzipping...');
 
     for (const coin of coins) {
-      const zips = await this.getDirFiles(this.monthFolder + coin, '.zip');
+      const zips = await this.getDirFiles(this.srcMonthFolder + coin, '.zip');
 
       if (this.unzip) {
         for (const filename of zips) {
           if (filename.search('.zip') !== -1) {
             await this.unzipFile(
-              path.join(__approot, this.monthFolder, coin, filename),
-              path.join(__approot, this.monthFolder, coin)
+              path.join(__approot, this.srcMonthFolder, coin, filename),
+              path.join(__approot, this.srcMonthFolder, coin)
             );
           }
         }
       }
+    }
 
-      const csvs = await this.getDirFiles(this.monthFolder + coin, '.csv');
+    console.log('Unzipped all');
+
+
+    // if (!this.unzip) {
+    for (const coin of coins) {
+      const csvs = await this.getDirFiles(this.srcMonthFolder + coin, '.csv');
       const cmd = this.getCatFilesCmd(csvs, coin);
 
       console.log('----');
@@ -61,6 +97,7 @@ class MergeCSV {
 
       this.exec(cmd);
     }
+    // }
 
   }
 
@@ -73,14 +110,14 @@ class MergeCSV {
 
     for (const filename of files) {
       if (filename.search('.csv') !== -1) {
-        cmd += ' ' + path.join(__approot, this.monthFolder, coin, filename);
+        cmd += ' ' + path.join(__approot, this.srcMonthFolder, coin, filename);
       }
     }
     cmd += ' > ' + path.join(__approot, `csv/${this.month}`, outFilename);
     return cmd;
   }
 
-  async getDirFiles(folder, filter) {
+  async getDirFiles(folder, filter = false) {
     return new Promise((resolve, reject) => {
       fs.readdir(path.join(__approot, folder), (err, files) => {
         let res = files.filter(el => el.search('usdt') !== -1)
