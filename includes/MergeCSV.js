@@ -2,15 +2,16 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require("child_process");
 const AdmZip = require("adm-zip");
+const config = require("../config.json");
 
 const __approot = path.join(__dirname, '..');
 
 class MergeCSV {
-  constructor(month) {
-    this.month = month;
-    this.year = 2022;
-    this.unzip = true;
-    this.closeMonth = false;
+  constructor() {
+    this.month = config.month;
+    this.year = config.year;
+    this.unzip = config.unzip;
+    this.closeMonth = config.closeMonth;
     this.srcMonthFolder = `crypto-save-history/${this.year}/${this.month}/`;
     this.resMonthFolder = `csv/${this.month}/`;
 
@@ -18,10 +19,6 @@ class MergeCSV {
 
     // rm src csv files
     // this.exec(`find ${path.join(__approot, this.srcMonthFolder)} -type f -name '*.csv' -delete`);
-  }
-
-  init() {
-
   }
 
   exec(cmd) {
