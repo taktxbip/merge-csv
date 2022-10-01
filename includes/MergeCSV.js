@@ -10,6 +10,7 @@ class MergeCSV {
     this.month = month;
     this.year = 2022;
     this.unzip = true;
+    this.closeMonth = false;
     this.srcMonthFolder = `crypto-save-history/${this.year}/${this.month}/`;
     this.resMonthFolder = `csv/${this.month}/`;
 
@@ -40,7 +41,7 @@ class MergeCSV {
   rmCSVs = async () => {
     console.log('rmCSVs');
     const files = await this.getDirFiles(this.resMonthFolder);
-    
+
     return new Promise((resolve, reject) => {
       if (!files.length) {
         resolve('Nothing to remove');
@@ -106,7 +107,10 @@ class MergeCSV {
 
     const postfix = this.getDayFromCSVFile(files[0]) + '_' + this.getDayFromCSVFile(files[files.length - 1]);
     const month = this.month < 10 ? '0' + this.month : this.month;
-    const outFilename = `${coin}-line-${this.year}-${month}-${postfix}.csv`;
+
+    const outFilename = this.closeMonth ?
+      `${coin}-line-${this.year}-${month}.csv` :
+      `${coin}-line-${this.year}-${month}-${postfix}.csv`;
 
     for (const filename of files) {
       if (filename.search('.csv') !== -1) {
