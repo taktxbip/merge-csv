@@ -67,7 +67,7 @@ class MergeCSV {
     console.log('Unzipping...');
 
     for (const coin of coins) {
-      const zips = await this.getDirFiles(this.srcMonthFolder + coin, '.zip');
+      const zips = await this.getDirFiles(this.srcMonthFolder + coin);
 
       if (this.unzip) {
         for (const filename of zips) {
@@ -84,7 +84,6 @@ class MergeCSV {
     console.log('Unzipped all');
 
 
-    // if (!this.unzip) {
     for (const coin of coins) {
       const csvs = await this.getDirFiles(this.srcMonthFolder + coin, '.csv');
       const cmd = this.getCatFilesCmd(csvs, coin);
@@ -95,7 +94,6 @@ class MergeCSV {
 
       this.exec(cmd);
     }
-    // }
 
   }
 
