@@ -1,1 +1,1 @@
-aws s3 sync s3://crypto-save-history ./crypto-save-history 
+aws s3 sync s3://crypto-save-history ./crypto-save-history
