@@ -1,1 +1,4 @@
 aws s3 sync s3://crypto-save-history ./crypto-save-history
+aws s3 --recursive mv s3://crypto-save-history/2022/10/shibusdt s3://crypto-save-history/2022/10/1000shibusdt
+aws s3 --recursive mv s3://crypto-save-history/2022/10/lunausdt s3://crypto-save-history/2022/10/lunausdt
+aws s3 cp c:\sync s3://atasync1/sync --recursive
